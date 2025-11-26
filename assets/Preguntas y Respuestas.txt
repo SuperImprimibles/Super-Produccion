@@ -1,0 +1,371 @@
+🎯 SECCIÓN 1: FLUJO DE TRABAJO
+P: ¿Flujo completo del usuario?
+
+R: Usuario abre app → Escribe temática → Arrastra imágenes → Sistema elimina fondos automáticamente → Sugiere colores → Analiza logo → Usuario ve 9 diapositivas en tiempo real → Click "Publicar" → Genera archivos → Sube a Drive → Publica en MercadoLibre
+
+P: ¿Las 9 diapositivas son obligatorias?
+
+R: Sí, siempre 9 diapositivas fijas (1-9)
+
+P: ¿Qué contiene cada diapositiva?
+
+R: Portadas para la publicación de MercadoLibre, personalizadas con material del usuario
+
+
+🖼️ SECCIÓN 2: EDITOR DE IMÁGENES
+P: ¿Tecnología para eliminar fondo?
+
+R: rembg (Python local), 100% offline
+
+P: ¿Calidad o velocidad?
+
+R: Calidad alta (3-5 seg/imagen), bordes perfectos
+
+P: ¿Qué hace el editor manual?
+
+R: Lápiz verde = conservar, Borrador rojo = eliminar. Ajustes manuales después de eliminación automática
+
+P: ¿La imagen editada reemplaza la original?
+
+R: Sí, solo se guarda la versión final
+
+P: ¿Sombras, iluminación y bordes del editor?
+
+R: Son metadatos que modifican el diseño de la forma "NOMBRE" en PowerPoint
+
+
+✏️ SECCIÓN 3: DISEÑADOR DE TEXTOS
+P: ¿Cómo funciona el texto "NOMBRE"?
+
+R: Se aplica a todas las formas "NOMBRE" en todas las diapositivas del PowerPoint
+
+P: ¿Cuándo se aplica el diseño de texto?
+
+R: Solo al presionar "Aplicar" en la ventana Diseñador
+
+P: ¿La caja "LOGO" qué muestra?
+
+R: La imagen del cuadro 13 de personajes (con fondo eliminado) como referencia para imitar diseño
+
+P: ¿Cómo imita el diseño del logo?
+
+R: Analiza colores, sombras, bordes, degradados, rotación, brillo. Compara con biblioteca de fuentes para elegir similar
+
+P: ¿La vista previa del diseñador debe mostrar el nombre real?
+
+R: Sí, si el nombre es "Sofía", debe decir "SOFÍA" en lugar de "TEXTO"
+
+
+🎨 SECCIÓN 4: COLORES Y TEMÁTICA
+P: ¿Qué hace el campo "Temática"?
+
+R: Sirve como referencia para paletas de colores, nombre, edad, diseño de texto
+
+P: ¿Los 3 colores dónde se aplican?
+
+R: Color 1 → formas "COLORPRIMARIO", Color 2 → "COLORSECUNDARIO", Color 3 → "COLORTERCIARIO"
+
+P: ¿Cómo se sugieren colores automáticamente?
+
+R: Extrae colores dominantes de imágenes cargadas, elige 3 que contrasten bien. Usuario puede modificarlos manualmente
+
+P: ¿Campo "Público" (General/Masculino/Femenino) para qué sirve?
+
+R: Para etiquetas de la publicación en MercadoLibre
+
+
+📁 SECCIÓN 5: IMPORTACIÓN DE MATERIAL
+P: ¿Cómo importar múltiples imágenes?
+
+R: Botón "Importar Material" → Seleccionar carpeta → Busca recursivamente en subcarpetas
+
+P: ¿Cómo detecta personajes vs fondos?
+
+R: Por carpetas: /Personajes/, /PERSONAJES/, /PNG/ = Personajes | /Fondos/, /FONDOS/ = Fondos
+
+P: ¿Qué pasa si la carpeta no tiene subcarpetas?
+
+R: Detectar automáticamente: PNG transparente = Personajes, JPG/PNG con fondo = Fondos
+
+P: ¿Formatos soportados?
+
+R: PNG, JPG, JPEG, GIF (primer frame), SVG (convertir a PNG), WebP (convertir a PNG)
+
+P: ¿Límite de imágenes?
+
+R: Historial: 50 imágenes (todas los proyectos). Proyecto actual: 12 personajes + LOGO + 12 fondos + 3 fondos especiales
+
+P: ¿Nombres repetidos?
+
+R: Reemplazar el anterior
+
+P: ¿Imágenes muy grandes (8000x6000px)?
+
+R: Procesar tal cual
+
+
+💾 SECCIÓN 6: GUARDADO Y PROYECTOS
+P: ¿Qué guarda el botón "Guardar"?
+
+R: Proyecto completo con imágenes + config.json
+
+P: ¿Autoguardado?
+
+R: Cada 5 minutos
+
+P: ¿Formato del JSON?
+json{
+  "version": "1.0",
+  "fecha": "2025-01-15T10:30:00",
+  "config": {
+    "tematica": "Unicornios",
+    "nombre": "Sofía",
+    "edad": 5,
+    "publico": "femenino",
+    "colores": ["#FF69B4", "#E6E6FA", "#87CEEB"]
+  },
+  "personajes": [
+    { "slot": 0, "ruta": "C:/temp/unicornio1.png", "procesado": true }
+  ],
+  "fondos": [...],
+  "disenoTexto": {
+    "fuente": "Comic Sans MS",
+    "tamano": 48,
+    "sombra": {...}
+  }
+}
+```
+
+**P: ¿Recuperación de proyecto al reabrir?**
+- R: Mostrar lista de proyectos recientes en el historial
+
+---
+
+## 📋 SECCIÓN 7: HISTORIAL
+
+**P: ¿Dónde se guarda?**
+- R: `D:\SuperImprimible\Super Produccion\assets\Historial de Material`
+
+**P: ¿Estructura?**
+```
+Historial de Material/
+  ├── 2025-01-15_Unicornios/
+  │   ├── proyecto.json
+  │   ├── Personajes/
+  │   ├── Fondos/
+  │   └── kit.pptx
+```
+
+**P: ¿Botón "Historial de Material" qué hace?**
+- R: Abrir carpeta en explorador de Windows
+
+**P: ¿Historial muestra últimas 50 imágenes de?**
+- R: TODOS los proyectos, ordenadas por fecha (más reciente primero)
+
+---
+
+## 🔄 SECCIÓN 8: PROCESAMIENTO
+
+**P: ¿Orden al arrastrar imágenes?**
+- R: Cargar imagen → Procesar fondo → Mostrar en cuadro
+
+**P: ¿Procesamiento secuencial o paralelo?**
+- R: Paralelo (2 imágenes simultáneas). Solo a Personajes se elimina fondo, no a Fondos
+
+**P: ¿Mostrar progreso?**
+- R: Modal en centro de pantalla con: "⏳ Procesando imágenes: 3/24 completadas"
+
+**P: ¿Si arrastra 12 personajes y luego 12 fondos durante procesamiento?**
+- R: Procesar en paralelo (2 imágenes a la vez)
+
+---
+
+## ☁️ SECCIÓN 9: GOOGLE DRIVE
+
+**P: ¿Cómo subir a Drive sin API?**
+- R: Opción 1: Detectar OneDrive instalado → Copiar archivos automáticamente
+- Opción 2 (si falla): Abrir navegador en drive.google.com para arrastre manual
+
+**P: ¿Estructura en Drive?**
+```
+Drive/
+  Super Imprimibles/
+    TEMATICA/
+      ├── PowerPoint "Tematica.pptx"
+      ├── Personajes/
+      ├── Fondos/
+      ├── Fuentes/
+      └── Instructivo.png
+```
+
+**P: ¿Carpeta "Fuentes"?**
+- R: Se copia de `D:\SuperImprimible\Super Produccion\assets\Fuentes` (archivos .ttf/.otf). Son las mismas para todos + la fuente del diseño de texto
+
+**P: ¿Archivo "Instructivo.png"?**
+- R: Imagen fija, siempre la misma, instrucciones de cómo descargar e instalar fuentes
+
+---
+
+## 📤 SECCIÓN 10: MERCADOLIBRE
+
+**P: ¿Archivo "Datos de Publicacion.txt" qué contiene?**
+```
+Categoria: Souvenirs, Cotillón y Fiestas / Kits Imprimibles
+Titulo: Tematica Kit Cumpleaños Imprimible Editable Candy Bar (máx 60 chars)
+Condición: Nuevo
+Stock: 1.000
+Precio: $4.000
+Descripción: [Texto fijo largo con detalles del kit]
+Cuotas: Agregar cuotas
+Costo de envío: Gratis
+Personaje: [Rellenar con IA]
+Ocasiones: [Rellenar con IA]
+Modelo: [Tematica]
+```
+
+**P: ¿URLs de portadas?**
+- R: Las portadas NO se suben a Drive, son para la publicación de ML
+
+**P: ¿Campos "Personaje" y "Ocasiones" con IA?**
+- R: Para "Unicornios" → Personaje: "Unicornio", Ocasiones: "Cumpleaños, Baby Shower, Bautismo"
+
+**P: ¿Campo "Modelo"?**
+- R: Reemplazar con la temática real (ej: "Unicornios")
+
+**P: ¿Configuración API MercadoLibre?**
+- R: Variables de entorno: `MELI_APP_ID`, `MELI_SECRET`
+
+---
+
+## 🎯 SECCIÓN 11: VALIDACIONES
+
+**P: ¿Qué es obligatorio antes de publicar?**
+- R: 12 Personajes + 12 Fondos + 3 Fondos especiales (A, B, C) + Temática + Nombre + Edad + Colores (o usar sugeridos)
+
+**P: ¿LOGO es obligatorio?**
+- R: No, es opcional
+
+**P: ¿Permitir publicar sin llenar todo?**
+- R: No, todo es obligatorio excepto LOGO
+
+---
+
+## 🔧 SECCIÓN 12: POWERPOINT Y MACROS
+
+**P: ¿Diapositivas del "Presentacion Kit.pptx"?**
+- R: 9 diapositivas fijas (1-9), no se pueden agregar/quitar
+
+**P: ¿Nomenclatura de formas?**
+```
+Presentacion Kit.pptx (9 diapositivas):
+- PNG 1 a PNG 12 (Personajes)
+- LOGO (Personaje 13)
+- FONDO 1 a FONDO 12
+- FONDO A, FONDO B, FONDO C
+- NOMBRE
+- COLORPRIMARIO, COLORSECUNDARIO, COLORTERCIARIO
+- TEMATICA
+
+Kit Cumpleaños.pptx (~90 diapositivas):
+- Diapositiva 71: Formulario control (#PAPEL1-12, #FONDO1-6, #PNG1-13, #TEMATICA)
+- Diapositivas 73-81: Portadas (grupos "1" a "9")
+- Diapositivas 1-70: Contenido editable
+P: ¿Las macros actuales qué hacen?
+
+Paso 1 (FORMULARIO): Carga imágenes en diapositiva 71
+Paso 4 (ARCHIVOS): Exporta 9 portadas, elimina secciones, guarda kit, recopila fuentes
+
+P: ¿Cómo ejecutar macro desde Electron?
+
+R: PowerShell con COM Automation:
+
+powershell$ppt = New-Object -ComObject PowerPoint.Application
+$pres = $ppt.Presentations.Open("ruta/kit.pptx")
+$pres.RunMacro("NombreMacro", "param1", "param2")
+$pres.Save()
+$pres.Close()
+```
+
+---
+
+## 📦 SECCIÓN 13: PUBLICACIÓN FINAL
+
+**P: ¿Flujo al presionar "Publicar"?**
+```
+1. Validar todo completo
+2. Generar 9 imágenes portadas
+3. Aplicar macros a Kit cumpleaños
+4. Crear carpeta: TEMATICA/
+   ├── Portadas/ (9 PNG)
+   ├── Kit.pptx
+   ├── Personajes/ (12 PNG)
+   ├── Fondos/ (15 PNG)
+   └── metadata.json
+5. Subir a Drive
+6. Almacenar en Historial de Material
+7. Publicar en MercadoLibre
+8. Mostrar confirmación con links
+P: ¿Qué pasa después de publicar?
+
+R: Limpiar proyecto y empezar nuevo. Si quiere reabrir, ir a Historial
+
+
+🐛 SECCIÓN 14: MANEJO DE ERRORES
+P: ¿Sin internet para MercadoLibre?
+
+R: Guardar en D:/SuperImprimible/Pendientes/tematica_nombre.json → Mostrar "⚠️ Sin internet. Guardado para publicar después" → Botón "Reintentar publicación"
+
+P: ¿Imagen corrupta?
+
+R: Cartel de error sutil en el cuadro de la imagen, permitir reemplazar
+
+P: ¿PowerPoint no instalado?
+
+R: Usar LibreOffice Impress como alternativa
+
+P: ¿App se cierra sin guardar?
+
+R: Autoguardado cada 5 minutos
+
+
+🪟 SECCIÓN 15: VENTANA RECOLECTOR
+P: ¿Para qué sirve?
+
+R: Vista compacta flotante para arrastrar imágenes rápidamente
+
+P: ¿Se sincroniza en tiempo real?
+
+R: Sí, cambios en recolector se ven instantáneamente en ventana principal
+
+P: ¿Indicador de "procesando fondo"?
+
+R: Sí, algo sutil
+
+
+🔄 SECCIÓN 16: SINCRONIZACIÓN MÚLTIPLES VENTANAS
+P: ¿Cambio de color en ventana principal actualiza Diseñador?
+
+R: No, solo al presionar "Aplicar"
+
+
+🎨 SECCIÓN 17: PRESETS (FUTURO)
+P: ¿Qué incluyen los presets?
+
+R: Diseño de texto predefinido, colores, efectos (sombras, iluminación)
+
+P: ¿Preset "Diseño Automático"?
+
+R: Dejarlo para el final, aún no implementar
+
+
+✅ CONFIRMACIONES FINALES
+
+✅ Eliminación fondo: rembg (Python), alta calidad, 3-5 seg
+✅ Importación: Por carpetas (Personajes/PNG + Fondos)
+✅ Procesamiento: Paralelo (2 imágenes simultáneas)
+✅ Autoguardado: Cada 5 minutos
+✅ Drive: OneDrive si existe, sino abrir navegador
+✅ MercadoLibre: API con variables de entorno
+✅ Formatos: PNG, JPG, JPEG, GIF, SVG, WebP
+✅ Validación: 12 personajes + LOGO (opcional) + 15 fondos + Temática + Nombre + Edad obligatorios
+✅ Indicador progreso: Modal centro pantalla

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recolector</title>
+    <link rel="stylesheet" type="text/css" href="recolector_style.css">
+</head>
+<body>
+    <div class="ventana-recolector">
+        <div class="tabs-lateral">
+            <button class="tab-superior activo" data-tab="personajes">Personajes</button>
+            <button class="tab-superior" data-tab="fondos">Fondos</button>
+        </div>
+        
+        <div class="contenido-principal-lateral">
+            
+            <div id="vista-personajes" class="vista-tab activo">
+                <div class="grid-items">
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    
+                    <div class="item-grid item-logo drop-zone" draggable="true" data-accepts-image="true" data-original-content="LOGO">
+                        <span class="texto-logo">LOGO</span>
+                    </div>
+                    <div class="item-grid item-basura-personajes" draggable="false">
+                        <svg class="icono-basura" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="vista-fondos" class="vista-tab">
+                <div class="grid-items">
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                    
+                    <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="A"><span>A</span></div>
+                    <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="B"><span>B</span></div>
+                    <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="C"><span>C</span></div>
+                    
+                    <div class="item-grid item-basura-fondos" draggable="false">
+                        <svg class="icono-basura" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="recolector_script.js"></script>
+</body>
+</html>

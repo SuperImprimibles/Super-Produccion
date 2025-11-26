@@ -1,0 +1,36 @@
+{
+  "name": "super-imprimible",
+  "version": "2.0.0",
+  "description": "Aplicación de escritorio para Super Imprimibles con LibreOffice",
+  "main": "source/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "install-python-deps": "pip install python-pptx Pillow"
+  },
+  "keywords": [
+    "electron",
+    "super-imprimibles",
+    "diseño",
+    "libreoffice",
+    "python-pptx"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^27.0.0"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.3"
+  },
+  "requirements": {
+    "system": [
+      "LibreOffice 7.0+",
+      "Python 3.7+"
+    ],
+    "python": [
+      "python-pptx",
+      "Pillow"
+    ]
+  }
+}

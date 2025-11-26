@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Imprimibles</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div class="interfaz">
+    <div class="contenedor-principal">
+      
+      <div class="panel-izquierdo" id="panel-izquierdo">
+        <div class="tabs-lateral">
+          <button class="tab-superior activo" data-tab="personajes">Personajes</button>
+          <button class="tab-superior" data-tab="fondos">Fondos</button>
+        </div>
+        
+        <div class="contenido-principal-lateral">
+            
+            <div id="vista-personajes" class="vista-tab activo">
+              <div class="grid-items">
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                
+                <div class="item-grid item-logo drop-zone" draggable="true" data-accepts-image="true" data-original-content="LOGO">
+                  <span class="texto-logo">LOGO</span>
+                </div>
+                <div class="item-grid item-basura-personajes" draggable="false">
+                  <svg class="icono-basura" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <div id="vista-fondos" class="vista-tab">
+               <div class="grid-items">
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                <div class="item-grid drop-zone" draggable="true" data-accepts-image="true">+</div>
+                
+                <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="A"><span>A</span></div>
+                <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="B"><span>B</span></div>
+                <div class="item-grid item-letra drop-zone" draggable="true" data-accepts-image="true" data-original-content="C"><span>C</span></div>
+                
+                <div class="item-grid item-basura-fondos" draggable="false">
+                  <svg class="icono-basura" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="area-central-contenedor">
+        <div class="barra-superior">
+          <div class="controles-centro">
+            <button class="btn-icono" title="Guardar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+            </button>
+            <button class="btn-icono" title="Importar material">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v10z"></path>
+                </svg>
+            </button>
+            <button class="btn-icono" title="Deshacer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+            </button>
+            <button class="btn-icono" title="Rehacer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 4v6h6"></path>
+                    <path d="M3.51 15a9 9 0 1 0 2.12-9.36L1 10"></path>
+                </svg>
+            </button>
+            <button class="btn-icono" title="Historial de material">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </button>
+            <button class="btn-icono" id="btn-nuevo-proyecto" title="Nuevo Proyecto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+            </button>
+            <button class="btn-texto-recolectar">Recolectar</button>
+          </div>
+          
+          <button class="btn-publicar">Publicar</button>
+        </div>
+        
+        <!-- ÁREA CENTRAL CON GRID 3x3 DE DIAPOSITIVAS -->
+        <div class="area-central">
+          <div class="grid-diapositivas">
+            <div class="diapositiva-item" data-slide="1">
+              <img class="preview-slide" data-slide="1" src="" alt="Slide 1">
+              <span class="slide-number">1</span>
+            </div>
+            <div class="diapositiva-item" data-slide="2">
+              <img class="preview-slide" data-slide="2" src="" alt="Slide 2">
+              <span class="slide-number">2</span>
+            </div>
+            <div class="diapositiva-item" data-slide="3">
+              <img class="preview-slide" data-slide="3" src="" alt="Slide 3">
+              <span class="slide-number">3</span>
+            </div>
+            <div class="diapositiva-item" data-slide="4">
+              <img class="preview-slide" data-slide="4" src="" alt="Slide 4">
+              <span class="slide-number">4</span>
+            </div>
+            <div class="diapositiva-item" data-slide="5">
+              <img class="preview-slide" data-slide="5" src="" alt="Slide 5">
+              <span class="slide-number">5</span>
+            </div>
+            <div class="diapositiva-item" data-slide="6">
+              <img class="preview-slide" data-slide="6" src="" alt="Slide 6">
+              <span class="slide-number">6</span>
+            </div>
+            <div class="diapositiva-item" data-slide="7">
+              <img class="preview-slide" data-slide="7" src="" alt="Slide 7">
+              <span class="slide-number">7</span>
+            </div>
+            <div class="diapositiva-item" data-slide="8">
+              <img class="preview-slide" data-slide="8" src="" alt="Slide 8">
+              <span class="slide-number">8</span>
+            </div>
+            <div class="diapositiva-item" data-slide="9">
+              <img class="preview-slide" data-slide="9" src="" alt="Slide 9">
+              <span class="slide-number">9</span>
+            </div>
+          </div>
+          <div class="loading-overlay" id="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">Actualizando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL DERECHO -->
+      <div class="panel-derecho" id="panel-derecho">
+        
+        <div class="seccion">
+          <h3>TEMÁTICA</h3>
+          <input type="text" id="tematica" class="ai-enable" placeholder="Temática" autocomplete="off">
+          
+          <select id="nombre-input" class="ai-enable">
+            <option value="">Nombre:</option>
+            <option value="Ana">Nombre: Ana</option>
+            <option value="Juan">Nombre: Juan</option>
+          </select>
+          
+          <input type="number" id="edad" class="ai-enable" placeholder="Edad:" min="1" max="50">
+          
+          <select id="publico" class="ai-enable">
+            <option value="general">Público: General</option>
+            <option value="masculino">Público: Masculino</option>
+            <option value="femenino">Público: Femenino</option>
+          </select>
+        </div>
+
+        <div class="seccion">
+          <h3>TEXTO</h3>
+          <div class="texto-preview ai-enable" id="preview-texto">NOMBRE</div>
+        </div>
+
+        <div class="seccion">
+          <h3 class="ai-enable-header" data-group="colores">COLORES</h3>
+          <div class="paleta-colores" id="grupo-colores">
+            <div class="color-circulo-wrapper">
+              <input type="color" class="color-circulo ai-enable" value="#0d0d0d" title="Color 1" data-group="colores">
+            </div>
+            <div class="color-circulo-wrapper">
+              <input type="color" class="color-circulo ai-enable" value="#0d0d0d" title="Color 2" data-group="colores">
+            </div>
+            <div class="color-circulo-wrapper">
+              <input type="color" class="color-circulo ai-enable" value="#0d0d0d" title="Color 3" data-group="colores">
+            </div>
+          </div>
+        </div>
+
+        <div class="seccion">
+          <h3>PRESETS</h3>
+          <select class="selector-preset ai-enable" id="preset-selector">
+            <option value="">Seleccionar...</option>
+            <option value="preset1">Preset 1</option>
+            <option value="preset2">Preset 2</option>
+          </select>
+          <div class="botones-preset">
+            <button class="btn-preset" id="btn-cargar">Cargar</button>
+            <button class="btn-preset guardar" id="btn-guardar">Guardar</button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

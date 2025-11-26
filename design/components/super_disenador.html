@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Diseñador de Textos</title>
+    <link rel="stylesheet" type="text/css" href="disenador_style.css">
+</head>
+<body>
+    <div class="ventana-disenador">
+        
+        <!-- Barra de herramientas superior -->
+        <div class="barra-herramientas">
+            <select class="select-fuente ai-enable" id="select-fuente">
+                <option value="Aptos">Aptos (Cuerpo)</option>
+            </select>
+            
+            <input type="number" class="select-tamano ai-enable" id="select-tamano" min="1" max="500" value="12">
+            
+            <div class="grupo-herramientas">
+                <button class="btn-tool" id="btn-aumentar-tamano" title="Aumentar tamaño de texto">A+</button>
+                <button class="btn-tool" id="btn-disminuir-tamano" title="Disminuir tamaño de texto">A-</button>
+            </div>
+            
+            <!-- GRUPO INDEPENDIENTE: B, I, S -->
+            <div class="grupo-herramientas grupo-independiente" data-grupo="formato">
+                <button class="btn-tool ai-enable" data-formato="negrita" title="Negrita"><strong>B</strong></button>
+                <button class="btn-tool ai-enable" data-formato="cursiva" title="Texto inclinado"><em>I</em></button>
+                <button class="btn-tool ai-enable" data-formato="sombra" title="Sombra"><u>S</u></button>
+            </div>
+            
+            <!-- GRUPO EXCLUSIVO: Capitalización -->
+            <div class="grupo-herramientas grupo-exclusivo ai-group" data-grupo="capitalizacion">
+                <button class="btn-tool ai-enable" data-caps="mayusculas" title="Texto en MAYÚSCULAS">AB</button>
+                <button class="btn-tool ai-enable" data-caps="capitalizar" title="Mayúscula en la Primera Letra">Ab</button>
+                <button class="btn-tool ai-enable" data-caps="minusculas" title="texto en minúsculas">ab</button>
+            </div>
+            
+            <!-- GRUPO EXCLUSIVO: Alineación -->
+            <div class="grupo-herramientas grupo-exclusivo ai-group" data-grupo="alineacion">
+                <button class="btn-tool ai-enable" data-alineacion="izquierda" title="Alinear a la izquierda">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <rect x="2" y="3" width="10" height="1.5"/>
+                        <rect x="2" y="7" width="12" height="1.5"/>
+                        <rect x="2" y="11" width="8" height="1.5"/>
+                    </svg>
+                </button>
+                <button class="btn-tool activo ai-enable" data-alineacion="centro" title="Alinear al centro">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <rect x="3" y="3" width="10" height="1.5"/>
+                        <rect x="2" y="7" width="12" height="1.5"/>
+                        <rect x="4" y="11" width="8" height="1.5"/>
+                    </svg>
+                </button>
+                <button class="btn-tool ai-enable" data-alineacion="derecha" title="Alinear a la derecha">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <rect x="4" y="3" width="10" height="1.5"/>
+                        <rect x="2" y="7" width="12" height="1.5"/>
+                        <rect x="6" y="11" width="8" height="1.5"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="separador"></div>
+            
+            <!-- GRUPO EXCLUSIVO: Espaciado entre letras -->
+            <div class="grupo-herramientas">
+                <button class="btn-tool btn-decorativo" title="Decoración">◄</button>
+            </div>
+            <div class="grupo-herramientas grupo-exclusivo ai-group" data-grupo="espaciado">
+                <button class="btn-tool activo ai-enable" data-espaciado="0" title="Sin separación entre letras">1</button>
+                <button class="btn-tool ai-enable" data-espaciado="1" title="Separación nivel 2">2</button>
+                <button class="btn-tool ai-enable" data-espaciado="2" title="Separación nivel 3">3</button>
+                <button class="btn-tool ai-enable" data-espaciado="3" title="Separación nivel 4">4</button>
+                <button class="btn-tool ai-enable" data-espaciado="4" title="Separación nivel 5">5</button>
+            </div>
+            <div class="grupo-herramientas">
+                <button class="btn-tool btn-decorativo" title="Decoración">►</button>
+            </div>
+            
+            <!-- BOTÓN APLICAR -->
+            <button class="btn-aplicar">Aplicar</button>
+        </div>
+
+        <div class="contenido-principal">
+            
+            <!-- Área de previsualización -->
+            <div class="area-previsualizacion">
+                <div class="caja-logo">LOGO</div>
+                <div class="caja-texto">TEXTO</div>
+            </div>
+
+            <!-- Panel inferior: CAJAS DE CONTROL -->
+            <div class="panel-inferior">
+                
+                <!-- RELLENO -->
+                <div class="estilo-caja ai-box" data-box="relleno">
+                    <h3 class="ai-box-header">RELLENO</h3>
+                    <div class="relleno-opciones grupo-exclusivo ai-group" data-grupo="tipo-relleno">
+                        <label class="radio-opcion">
+                            <input type="radio" name="relleno" value="solido" class="ai-enable" checked>
+                            <span>Sólido</span>
+                            <div class="color-circulo-estilo color-inline ai-enable" id="contenido-solido">
+                                <input type="color" value="#0d0d0d" id="color-solido">
+                            </div>
+                        </label>
+                        
+                        <label class="radio-opcion">
+                            <input type="radio" name="relleno" value="degrades" class="ai-enable">
+                            <span>Degradado</span>
+                            <div class="contenido-degrades" id="contenido-degrades" style="display: none;">
+                                <div class="color-circulo-estilo color-inline ai-enable">
+                                    <input type="color" value="#0d0d0d" id="color-deg1">
+                                </div>
+                                <div class="color-circulo-estilo color-inline ai-enable">
+                                    <input type="color" value="#0d0d0d" id="color-deg2">
+                                </div>
+                                <div class="color-circulo-estilo color-inline ai-enable">
+                                    <input type="color" value="#0d0d0d" id="color-deg3">
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="radio-opcion">
+                            <input type="radio" name="relleno" value="imagen" class="ai-enable">
+                            <span>Imagen</span>
+                            <button class="btn-seleccionar-inline" id="contenido-imagen" style="display: none;" onclick="document.getElementById('input-imagen-relleno').click(); event.preventDefault();">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                            </button>
+                            <input type="file" id="input-imagen-relleno" accept="image/*" style="display: none;">
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- SOMBRA -->
+                <div class="estilo-caja ai-box" data-box="sombra">
+                    <h3 class="ai-box-header">Sombra</h3>
+                    <div class="control-row">
+                        <label>Color</label>
+                        <div class="color-circulo-estilo ai-enable">
+                            <input type="color" value="#0d0d0d">
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <label>Transparencia</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Tamaño</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Desenfoque</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Ángulo</label>
+                        <input type="number" class="valor-numerico valor-angulo ai-enable" value="0" min="0" max="360">
+                        <input type="range" class="ai-enable" min="0" max="360" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Distancia</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <!-- ILUMINACION -->
+                <div class="estilo-caja ai-box" data-box="iluminacion">
+                    <h3 class="ai-box-header">ILUMINACION</h3>
+                    <div class="control-row">
+                        <label>Color</label>
+                        <div class="color-circulo-estilo ai-enable">
+                            <input type="color" value="#0d0d0d" id="color-iluminacion">
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <label>Tamaño</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Transparencia</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Desenfoque</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <!-- REFLEJO -->
+                <div class="estilo-caja ai-box" data-box="reflejo">
+                    <h3 class="ai-box-header">REFLEJO</h3>
+                    <div class="control-row">
+                        <label>Transparencia</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Tamaño</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Desenfoque</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row">
+                        <label>Distancia</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <!-- GIRO 3D -->
+                <div class="estilo-caja caja-giro-3d ai-box" data-box="giro3d">
+                    <h3 class="ai-box-header">GIRO 3D</h3>
+                    <div class="control-row control-giro-3d">
+                        <label>X</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row control-giro-3d">
+                        <label>Y</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                    <div class="control-row control-giro-3d">
+                        <label>Z</label>
+                        <input type="number" class="valor-numerico ai-enable" value="0" min="0" max="100">
+                        <input type="range" class="ai-enable" min="0" max="100" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="disenador_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Editor</title>
+    <link rel="stylesheet" type="text/css" href="editor_style.css">
+</head>
+<body>
+    <div class="ventana-editor">
+        
+        <!-- Panel lateral izquierdo - CONTROLES -->
+        <div class="panel-lateral-izquierdo">
+            
+            <!-- Sección Posición -->
+            <div class="seccion-control" data-box="posicion">
+                <h3 class="ai-box-header">POSICION</h3>
+                
+                <div class="control-row">
+                    <label>Ancho</label>
+                    <span class="valor-display" id="valor-ancho">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-ancho" min="0" max="1000" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Alto</label>
+                    <span class="valor-display" id="valor-alto">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-alto" min="0" max="1000" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Disp. X</label>
+                    <span class="valor-display" id="valor-disp-x">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-disp-x" min="-500" max="500" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Disp. Y</label>
+                    <span class="valor-display" id="valor-disp-y">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-disp-y" min="-500" max="500" value="0">
+                </div>
+            </div>
+            
+            <!-- Sección Sombras -->
+            <div class="seccion-control" data-box="sombras">
+                <h3 class="ai-box-header">SOMBRAS</h3>
+                
+                <div class="control-row">
+                    <label>Color</label>
+                    <input type="color" class="color-circulo ai-enable" id="sombra-color" value="#0d0d0d">
+                </div>
+                
+                <div class="control-row">
+                    <label>Tamaño</label>
+                    <span class="valor-display" id="valor-sombra-tamano">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-sombra-tamano" min="0" max="50" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Transparencia</label>
+                    <span class="valor-display" id="valor-sombra-transparencia">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-sombra-transparencia" min="0" max="100" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Desenfoque</label>
+                    <span class="valor-display" id="valor-sombra-desenfoque">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-sombra-desenfoque" min="0" max="100" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Ángulo</label>
+                    <span class="valor-display" id="valor-sombra-angulo">0°</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-sombra-angulo" min="0" max="360" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Distancia</label>
+                    <span class="valor-display" id="valor-sombra-distancia">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-sombra-distancia" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <!-- Sección Iluminación -->
+            <div class="seccion-control" data-box="iluminacion">
+                <h3 class="ai-box-header">ILUMINACION</h3>
+                
+                <div class="control-row">
+                    <label>Color</label>
+                    <input type="color" class="color-circulo ai-enable" id="iluminacion-color" value="#0d0d0d">
+                </div>
+                
+                <div class="control-row">
+                    <label>Tamaño</label>
+                    <span class="valor-display" id="valor-iluminacion-tamano">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-iluminacion-tamano" min="0" max="50" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Transparencia</label>
+                    <span class="valor-display" id="valor-iluminacion-transparencia">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-iluminacion-transparencia" min="0" max="100" value="0">
+                </div>
+                
+                <div class="control-row">
+                    <label>Desenfoque</label>
+                    <span class="valor-display" id="valor-iluminacion-desenfoque">0</span>
+                    <input type="range" class="slider-control ai-enable" id="slider-iluminacion-desenfoque" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <!-- Sección Difuminado de Bordes -->
+            <div class="seccion-control" data-box="bordes">
+                <h3 class="ai-box-header">DIFUMINADO DE BORDES</h3>
+                
+                <div class="bordes-grid">
+                    <button class="btn-borde activo ai-enable" data-borde="0">1</button>
+                    <button class="btn-borde ai-enable" data-borde="2">2</button>
+                    <button class="btn-borde ai-enable" data-borde="3">3</button>
+                    <button class="btn-borde ai-enable" data-borde="4">4</button>
+                    <button class="btn-borde ai-enable" data-borde="5">5</button>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Área central - CANVAS -->
+        <div class="area-preview">
+            <div class="contenedor-imagen">
+                <canvas id="canvas-editor" width="800" height="600"></canvas>
+            </div>
+        </div>
+        
+        <!-- Panel lateral derecho - HERRAMIENTAS -->
+        <div class="panel-lateral-derecho">
+            <div class="botones-accion">
+                <button class="btn-accion btn-lapiz" id="btn-lapiz" title="Marcar área a conservar">
+                    Lápiz
+                </button>
+                <button class="btn-accion btn-borrador" id="btn-borrador" title="Marcar área a eliminar">
+                    Borrador
+                </button>
+                <button class="btn-accion btn-eliminar" id="btn-eliminar" title="Restaurar cambios">
+                    Eliminar
+                </button>
+            </div>
+            
+            <button class="btn-aplicar-editor" id="btn-aplicar-editor">Aplicar</button>
+        </div>
+        
+    </div>
+
+    <input type="file" id="input-abrir-archivo" accept="image/*" style="display: none;">
+
+    <script src="editor_script.js"></script>
+</body>
+</html>
