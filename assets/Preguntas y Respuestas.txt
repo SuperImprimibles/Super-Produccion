@@ -1,290 +1,72 @@
-# 📋 LISTADO COMPLETO DE PREGUNTAS Y RESPUESTAS
-
-## ✅ CONFIRMACIONES TÉCNICAS
-
-### **ARQUITECTURA Y ESTRUCTURA**
-
-**P: ¿Cuándo se usa cada archivo PowerPoint?**
-- R: `Presentacion Kit.pptx` = 9 portadas para MercadoLibre | `Kit Cumpleaños.pptx` = producto final para Drive
-
-**P: ¿Estructura de formas en Presentacion Kit.pptx?**
-- R: Todas las 9 diapositivas tienen PNG 1-12, FONDO 1-12, FONDO A-C, NOMBRE, TEMATICA, COLORPRIMARIO/SECUNDARIO/TERCIARIO (posicionadas diferente)
-
-**P: ¿Las 9 diapositivas son obligatorias?**
-- R: Sí, siempre 9 diapositivas fijas (1-9)
-
----
-
-## 🖼️ PROCESAMIENTO DE IMÁGENES
-
-### **ELIMINACIÓN DE FONDO**
-
-**P: ¿Dónde instalamos rembg?**
-- R: Vía pip en Python actual
-
-**P: ¿Qué versión de Python tienes?**
-- R: Actual
-
-**P: ¿Tecnología para eliminar fondo?**
-- R: rembg (Python local), 100% offline, calidad alta (3-5 seg/imagen)
-
-**P: ¿Procesamiento secuencial o paralelo?**
-- R: Paralelo (2 imágenes simultáneas). Solo Personajes, no Fondos
-
-**P: ¿Mostrar progreso?**
-- R: Modal en centro: "⏳ Procesando imágenes: 3/24 completadas"
-
-### **EDITOR MANUAL**
-
-**P: ¿Qué hace el editor manual?**
-- R: Lápiz verde = conservar, Borrador rojo = eliminar (ajustes post-rembg)
-
-**P: ¿La imagen editada reemplaza la original?**
-- R: Sí, solo se guarda la versión final
-
-**P: ¿Las marcas de lápiz verde/rojo se envían a rembg nuevamente?**
-- R: Sí
-
-**P: ¿Sombras, iluminación y bordes del editor?**
-- R: Son metadatos que modifican el diseño de la forma "NOMBRE" en PowerPoint
-
----
-
-## ✏️ DISEÑADOR DE TEXTOS
-
-**P: ¿Cómo funciona el texto "NOMBRE"?**
-- R: Se aplica a todas las formas "NOMBRE" en todas las diapositivas
-
-**P: ¿Cuándo se aplica el diseño de texto?**
-- R: Solo al presionar "Aplicar" en ventana Diseñador
-
-**P: ¿La fuente seleccionada debe copiarse a la carpeta "Fuentes"?**
-- R: Sí
-
-**P: ¿Necesitas que funcionen TODOS los efectos en PowerPoint (Iluminación, Reflejo, Giro 3D)?**
-- R: Sí, todos
-
-**P: ¿Cómo se aplican estos estilos al PowerPoint?**
-- R: Necesitas implementar la función que convierte estilos CSS a propiedades de PowerPoint
-
-**P: ¿La vista previa del diseñador debe mostrar el nombre real?**
-- R: Sí, si el nombre es "Sofía", debe decir "SOFÍA" en lugar de "TEXTO"
-
----
-
-## 🎨 COLORES Y ANÁLISIS
-
-**P: ¿Qué hace el campo "Temática"?**
-- R: Referencia para paletas de colores, nombre, edad, diseño de texto
-
-**P: ¿Los 3 colores dónde se aplican?**
-- R: Color 1 → COLORPRIMARIO, Color 2 → COLORSECUNDARIO, Color 3 → COLORTERCIARIO
-
-**P: ¿De qué imágenes extraemos colores automáticamente?**
-- R: Del LOGO; si no hay logo, de las imágenes de personajes
-
-**P: ¿Cómo se sugieren colores?**
-- R: Extrae colores dominantes, elige 3 que contrasten bien
-
-### **ANÁLISIS DEL LOGO**
-
-**P: ¿Qué debe hacer el análisis automático del LOGO?**
-- R: Extraer colores dominantes, detectar sombra/degradado/bordes, sugerir fuente similar
-
-**P: ¿Tienes biblioteca de fuentes para comparar?**
-- R: Usar fuentes del sistema
-
-**P: ¿Necesitas análisis con IA?**
-- R: Sí, o algún sistema con herramientas de Windows/PowerShell/macros
-
----
-
-## 📁 IMPORTACIÓN Y ALMACENAMIENTO
-
-**P: ¿Cómo importar múltiples imágenes?**
-- R: Botón "Importar Material" → Seleccionar carpeta → Busca recursivamente
-
-**P: ¿Cómo detecta personajes vs fondos?**
-- R: Por carpetas (/Personajes/, /PNG/ = Personajes | /Fondos/ = Fondos) o automático (PNG transparente = Personajes)
-
-**P: ¿Formatos soportados?**
-- R: PNG, JPG, JPEG, GIF (primer frame), SVG (convertir a PNG), WebP (convertir a PNG)
-
-**P: ¿Límite de imágenes?**
-- R: Historial: 50 (todos los proyectos) | Proyecto: 12 personajes + LOGO + 15 fondos
-
-**P: ¿Imágenes muy grandes (8000x6000px)?**
-- R: Procesar tal cual
-
-**P: ¿Nombres repetidos?**
-- R: Reemplazar el anterior
-
----
-
-## 💾 GUARDADO Y PROYECTOS
-
-**P: ¿Qué guarda el botón "Guardar"?**
-- R: Proyecto completo con imágenes + config.json
-
-**P: ¿Autoguardado?**
-- R: Cada 5 minutos
-
-**P: ¿Dónde se guarda el historial?**
-- R: `D:\SuperImprimible\Super Produccion\assets\Historial de Material`
-
-**P: ¿Historial muestra últimas 50 imágenes de?**
-- R: TODOS los proyectos, ordenadas por fecha (más reciente primero)
-
-**P: ¿Botón "Historial de Material" qué hace?**
-- R: Abrir carpeta en explorador de Windows
-
----
-
-## 🔄 SINCRONIZACIÓN Y VENTANAS
-
-**P: ¿El Recolector se sincroniza automáticamente?**
-- R: Sí, cambios en recolector se ven instantáneamente en ventana principal
-
-**P: ¿El indicador "procesando fondo" debe mostrarse en ambas ventanas?**
-- R: Sí
-
-**P: ¿Cambio de color en ventana principal actualiza Diseñador?**
-- R: No, solo al presionar "Aplicar"
-
----
-
-## 📤 PUBLICACIÓN Y APIS
-
-### **MERCADOLIBRE**
-
-**P: ¿Ya tienes credenciales de MercadoLibre?**
-- R: Sí
-  - Client Secret: `XzzHgqo9PPfO16wJZcDK0FZlJv95ShOu`
-  - App ID: `4278208035681349`
-  - Redirect URI: `https://super-imprimible.vercel.app/api/auth-redirect`
-
-**P: ¿Flujo OAuth está bien?**
-- R: Sí (Usuario presiona Publicar → Abre navegador → Autoriza → Obtenemos token → Publicamos)
-
-**P: ¿Ya tienes ACCESS_TOKEN o solo APP_ID + SECRET?**
-- R: (Pendiente de confirmar)
-
-**P: ¿Campos "Personaje" y "Ocasiones" con IA?**
-- R: Para "Unicornios" → Personaje: "Unicornio", Ocasiones: "Cumpleaños, Baby Shower, Bautismo"
-
-**P: ¿Hay alguna función útil de PowerShell/Windows para generar estos campos?**
-- R: (Opción propuesta: usar IA)
-
-**P: ¿Campo "Público" (General/Masculino/Femenino) para qué sirve?**
-- R: Para etiquetas de la publicación en MercadoLibre
-
-### **GOOGLE DRIVE**
-
-**P: ¿Subida a Drive automática o manual?**
-- R: Abrir navegador (https://drive.google.com/drive/my-drive) para arrastre manual
-
-**P: ¿Tienes credenciales de Google Drive API?**
-- R: No, usar método manual
-
-**P: ¿Estructura en Drive?**
-```
-Drive/Super Imprimibles/TEMATICA/
-  ├── PowerPoint "Tematica.pptx"
-  ├── Personajes/
-  ├── Fondos/
-  ├── Fuentes/
-  └── Instructivo.png
-```
-
-**P: ¿Carpeta "Fuentes"?**
-- R: Se copia de `D:\SuperImprimible\Super Produccion\assets\Fuentes` (todas + la del diseño de texto)
-
-**P: ¿Archivo "Instructivo.png" ya existe?**
-- R: Sí, ya existe
-
----
-
-## 🎯 VALIDACIONES
-
-**P: ¿Qué es obligatorio antes de publicar?**
-- R: 12 Personajes + 12 Fondos + 3 Fondos especiales (A, B, C) + Temática + Nombre + Edad + Colores
-
-**P: ¿LOGO es obligatorio?**
-- R: No, es opcional
-
-**P: ¿Validación antes de publicar?**
-- R: Sí, mostrar modal con "❌ Faltan 3 personajes, 2 fondos"
-
----
-
-## 🤖 INTELIGENCIA ARTIFICIAL
-
-**P: ¿Qué hace el "Modo IA" (turquesa)?**
-- R: Activa procesamiento con IA
-
-**P: ¿Ya tienes API key de Anthropic para Claude?**
-- R: No, necesitas incluir una IA gratuita de uso libre
-
-**P: ¿Qué IA prefieres?**
-- R: Groq API (14,400 tokens/min)
-- Clave: `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`
-
----
-
-## 🔧 MACROS Y POWERPOINT
-
-**P: ¿Las macros del Kit Cumpleaños ya existen?**
-- R: Sí, están en el git
-
-**P: ¿Necesitas crear o modificar las macros?**
-- R: Adaptar las macros existentes para que funcionen con el nuevo flujo
-
-**P: ¿Qué hacen las macros actuales?**
-- Paso 1 (FORMULARIO): Carga imágenes en diapositiva 71
-- Paso 4 (ARCHIVOS): Exporta 9 portadas, elimina secciones, guarda kit, recopila fuentes
-
-**P: ¿Cómo ejecutar macro desde Electron?**
-- R: PowerShell con COM Automation
-
----
-
-## 📦 FLUJO DE PUBLICACIÓN
-
-**P: ¿Flujo al presionar "Publicar"?**
-```
-1. Validar todo completo
-2. Generar 9 imágenes portadas (desde Presentacion Kit.pptx)
-3. Aplicar macros a Kit Cumpleaños
-4. Crear carpeta TEMATICA/
-5. Subir a Drive (manual)
-6. Almacenar en Historial
-7. Publicar en MercadoLibre
-8. Mostrar confirmación con links
-```
-
-**P: ¿Qué pasa después de publicar?**
-- R: Limpiar proyecto y empezar nuevo (Si quiere reabrir, ir a Historial)
-
----
-
-## 🐛 MANEJO DE ERRORES
-
-**P: ¿Sin internet para MercadoLibre?**
-- R: Guardar en `D:/SuperImprimible/Pendientes/` → Mostrar "⚠️ Sin internet" → Botón "Reintentar"
-
-**P: ¿Imagen corrupta?**
-- R: Cartel de error sutil, permitir reemplazar
-
-**P: ¿PowerPoint no instalado?**
-- R: Usar LibreOffice Impress como alternativa
-
-**P: ¿App se cierra sin guardar?**
-- R: Autoguardado cada 5 minutos
-
----
-
-## 🎨 PRESETS (FUTURO)
-
-**P: ¿Preset "Diseño Automático"?**
-- R: Dejarlo para el final, NO implementar ahora
-
+# 📝 LISTADO DETALLADO DE ESPECIFICACIONES
+
+## 1. FLUJO PRINCIPAL Y ARQUITECTURA
+
+1.  **FLUJO DE PUBLICACIÓN (OBLIGATORIO):**
+    * 1.1. Validar requerimientos.
+    * 1.2. Generar 9 imágenes de portada desde `Presentacion Kit.pptx`.
+    * 1.3. Aplicar macros a `Kit Cumpleaños.pptx`.
+    * 1.4. Crear carpeta `TEMATICA/` en Drive local.
+    * 1.5. Instruir para **Subida a Drive (MANUAL)** abriendo `https://drive.google.com/drive/my-drive`.
+    * 1.6. Almacenar la configuración y archivos en **Historial**.
+    * 1.7. Publicar en MercadoLibre.
+    * 1.8. Mostrar confirmación con *links*.
+2.  **POST-PUBLICACIÓN:** Limpiar el proyecto y comenzar uno nuevo.
+3.  **PPTS USADOS:** `Presentacion Kit.pptx` (portadas ML) y `Kit Cumpleaños.pptx` (producto final Drive).
+4.  **REQUERIMIENTO MÍNIMO:** 9 diapositivas fijas, 12 Personajes, 12 Fondos, 3 Fondos especiales (A, B, C), Temática, Nombre, Edad, Colores. LOGO es opcional.
+5.  **ESTRATEGIA POWERPOINT:** Usar **PowerPoint en Windows** con **PowerShell y COM Automation** (descarta LibreOffice como estrategia principal).
+
+## 2. PROCESAMIENTO DE IMÁGENES (REMBG)
+
+1.  **TECNOLOGÍA:** `rembg` (Python local, 100% *offline*).
+2.  **INSTALACIÓN:** Vía `pip` en Python actual.
+3.  **PROCESAMIENTO INICIAL:** **Automático y paralelo** (2 imágenes simultáneas) para todas las imágenes de **Personajes**, **incluyendo el LOGO**, al ser importadas/arrastradas.
+4.  **EXCLUSIÓN:** Los Fondos (Fondos A, B, C) NO pasan por `rembg`.
+5.  **PROGRESO:** Mostrar modal: "⏳ Procesando imágenes: 3/24 completadas".
+
+## 3. EDITOR MANUAL DE IMÁGENES
+
+1.  **HERRAMIENTAS:** Lápiz verde (conservar), Borrador rojo (eliminar).
+2.  **FLUJO DE EDICIÓN:**
+    * Imagen pasa por `rembg` automático.
+    * Usuario marca áreas con Lápiz/Borrador.
+    * La imagen **se procesa nuevamente con `rembg`** utilizando las marcas como guías (*hints*).
+3.  **GUARDADO:** La imagen editada reemplaza la versión anterior.
+4.  **METADATOS:** Sombras/Iluminación/Bordes del editor modifican la forma "NOMBRE" en PowerPoint.
+
+## 4. IMPORTACIÓN Y ALMACENAMIENTO
+
+1.  **IMPORTACIÓN:** Botón "Importar Material" selecciona carpeta y busca recursivamente.
+2.  **DETECCIÓN:** Personajes/PNG/ = Personajes. /Fondos/ = Fondos. PNG transparente = Personajes.
+3.  **FORMATOS:** PNG, JPG, JPEG, GIF (primer *frame*), SVG (convertir a PNG), WebP (convertir a PNG).
+4.  **TAMAÑO:** Procesar imágenes grandes (ej. 8000x6000px) tal cual.
+5.  **GUARDADO:** Botón "Guardar" guarda proyecto completo + `config.json`.
+6.  **AUTOGUARDADO:** Cada 5 minutos.
+
+## 5. SISTEMA DE HISTORIAL
+
+1.  **UBICACIÓN:** `D:\SuperImprimible\Super Produccion\assets\Historial de Material`.
+2.  **VISIBILIDAD:** Historial de las últimas 50 imágenes de **TODOS** los proyectos (ordenadas por fecha descendente).
+3.  **BOTÓN "HISTORIAL":** Debe conectarse al sistema (`material-history.js`) y abrir la carpeta de historial en el Explorador de Windows.
+
+## 6. DISEÑADOR DE TEXTOS Y COLORES
+
+1.  **APLICACIÓN:** Los estilos de texto y colores solo se aplican al presionar **"Aplicar"** en la ventana Diseñador.
+2.  **NOMBRE:** El texto "NOMBRE" se aplica a todas las formas "NOMBRE" en todas las diapositivas.
+3.  **VISTA PREVIA:** Debe mostrar el **nombre real** (ej. "SOFÍA") aplicando el diseño/estilo sugerido por la IA.
+4.  **FUENTES:** La fuente seleccionada debe copiarse a la carpeta "Fuentes".
+5.  **EFECTOS PPT:** Deben funcionar TODOS los efectos de PowerPoint (Iluminación, Reflejo, Giro 3D), requiriendo conversión de CSS a propiedades PPT.
+6.  **COLORES:** Color 1 $\rightarrow$ `COLORPRIMARIO`, Color 2 $\rightarrow$ `COLORSECUNDARIO`, Color 3 $\rightarrow$ `COLORTERCIARIO`.
+7.  **EXTRACCIÓN DE COLOR:** Automática del LOGO; si no hay, de las imágenes de personajes. Se eligen 3 que contrasten.
+
+## 7. INTELIGENCIA ARTIFICIAL
+
+1.  **MÉTODO:** Usar **Groq API** (14,400 tokens/min).
+2.  **CLAVE:** `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`.
+3.  **USOS IA:** Análisis de LOGO (colores, sombra, degradado, fuente), sugerencia de campos para MercadoLibre ("Personaje" y "Ocasiones").
+
+## 8. VALIDACIONES Y ARCHIVOS FALTANTES
+
+1.  **VALIDACIÓN:** Obligatorio antes de publicar. Mostrar modal con detalles (ej. "❌ Faltan 3 personajes").
+2.  **CONEXIÓN VALIDACIÓN:** El botón "Publicar" debe conectarse a `validation-system.js` y ejecutar la validación como el primer paso.
+3.  **ARCHIVOS DE SETUP:** Implementar `source/auto-installer.js` y `source/verify-dependencies.js` basados en los scripts de verificación existentes.
