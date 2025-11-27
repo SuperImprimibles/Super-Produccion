@@ -1015,3 +1015,312 @@ function inicializarApp() {
 }
 
 console.log('✅ Script completo cargado con todas las integraciones');
+
+// ============================================================
+// FUNCIONES BASE FALTANTES PARA script.js
+// Agregar ANTES de inicializarApp()
+// ============================================================
+
+const STORAGE_KEY = 'super-imprimibles-state';
+
+// ============================================================
+// GUARDAR ESTADO
+// ============================================================
+function guardarEstado() {
+    const estado = {
+        personajes: obtenerEstadoCuadros('vista-personajes'),
+        fondos: obtenerEstadoCuadros('vista-fondos'),
+        tematica: document.getElementById('tematica')?.value || '',
+        nombre: document.getElementById('nombre-input')?.value || '',
+        edad: document.getElementById('edad')?.value || '',
+        publico: document.getElementById('publico')?.value || 'general',
+        colores: Array.from(document.querySelectorAll('#grupo-colores .color-circulo') || []).map(c => c.value),
+        timestamp: Date.now()
+    };
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+    
+    // Aplicar cambios a LibreOffice (P2)
+    aplicarCambiosALibreOffice();
+}
+
+// ============================================================
+// CARGAR ESTADO
+// ============================================================
+function cargarEstado() {
+    const estadoStr = localStorage.getItem(STORAGE_KEY);
+    if (!estadoStr) return;
+    
+    try {
+        const estado = JSON.parse(estadoStr);
+        
+        // Restaurar cuadros
+        restaurarEstadoCuadros('vista-personajes', estado.personajes);
+        restaurarEstadoCuadros('vista-fondos', estado.fondos);
+        
+        // Restaurar campos
+        if (estado.tematica) document.getElementById('tematica').value = estado.tematica;
+        if (estado.nombre) document.getElementById('nombre-input').value = estado.nombre;
+        if (estado.edad) document.getElementById('edad').value = estado.edad;
+        if (estado.publico) document.getElementById('publico').value = estado.publico;
+        
+        // Restaurar colores
+        if (estado.colores) {
+            const selectoresColor = document.querySelectorAll('#grupo-colores .color-circulo');
+            estado.colores.forEach((color, index) => {
+                if (selectoresColor[index]) {
+                    selectoresColor[index].value = color;
+                }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error cargando estado:', error);
+    }
+}
+
+function obtenerEstadoCuadros(vistaId) {
+    const vista = document.getElementById(vistaId);
+    if (!vista) return [];
+    
+    const cuadros = vista.querySelectorAll('.drop-zone');
+    const estado = [];
+    
+    cuadros.forEach((cuadro, index) => {
+        const img = cuadro.querySelector('img');
+        estado.push({
+            index: index,
+            tieneImagen: !!img,
+            imagenSrc: img ? img.src : null,
+            contenidoOriginal: cuadro.dataset.originalContent || null
+        });
+    });
+    
+    return estado;
+}
+
+function restaurarEstadoCuadros(vistaId, estadoCuadros) {
+    if (!estadoCuadros) return;
+    
+    const vista = document.getElementById(vistaId);
+    if (!vista) return;
+    
+    const cuadros = vista.querySelectorAll('.drop-zone');
+    
+    estadoCuadros.forEach((estado, index) => {
+        if (index >= cuadros.length) return;
+        const cuadro = cuadros[index];
+        
+        if (estado.tieneImagen && estado.imagenSrc) {
+            cuadro.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = estado.imagenSrc;
+            cuadro.appendChild(img);
+            cuadro.dataset.tieneImagen = 'true';
+        }
+    });
+}
+
+// ============================================================
+// CONFIGURAR TABS
+// ============================================================
+function configurarTabs() {
+    const buttons = document.querySelectorAll('.tabs-lateral .tab-superior');
+    const views = document.querySelectorAll('.vista-tab');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-tab');
+            
+            buttons.forEach(b => b.classList.toggle('activo', b === btn));
+            
+            views.forEach(view => {
+                const isTarget = view.id === `vista-${target}`;
+                view.classList.toggle('activo', isTarget);
+            });
+        });
+    });
+}
+
+// ============================================================
+// CONFIGURAR CAMPOS
+// ============================================================
+function configurarCampos() {
+    // Preview de texto
+    const previewTexto = document.getElementById('preview-texto');
+    const nombreInput = document.getElementById('nombre-input');
+    
+    if (previewTexto && nombreInput) {
+        nombreInput.addEventListener('change', () => {
+            previewTexto.textContent = nombreInput.value || 'NOMBRE';
+        });
+    }
+    
+    // Click en preview abre diseñador
+    if (previewTexto) {
+        previewTexto.addEventListener('click', () => {
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.send('open-disenador-window');
+        });
+    }
+}
+
+// ============================================================
+// CONFIGURAR VENTANAS
+// ============================================================
+function configurarVentanas() {
+    // Los listeners de IPC ya están en main.js
+    console.log('✅ Ventanas configuradas');
+}
+
+// ============================================================
+// LIMPIAR TODO
+// ============================================================
+function limpiarTodo() {
+    if (!confirm('¿Estás seguro de que quieres limpiar todo el proyecto?')) {
+        return;
+    }
+    
+    // Limpiar cuadros de personajes
+    const vistaPersonajes = document.getElementById('vista-personajes');
+    if (vistaPersonajes) {
+        const cuadros = vistaPersonajes.querySelectorAll('.drop-zone');
+        cuadros.forEach(cuadro => {
+            const contenidoOriginal = cuadro.dataset.originalContent;
+            if (contenidoOriginal === 'LOGO') {
+                cuadro.innerHTML = '<span class="texto-logo">LOGO</span>';
+            } else if (!cuadro.classList.contains('item-basura-personajes')) {
+                cuadro.innerHTML = '+';
+            }
+            delete cuadro.dataset.tieneImagen;
+        });
+    }
+    
+    // Limpiar cuadros de fondos
+    const vistaFondos = document.getElementById('vista-fondos');
+    if (vistaFondos) {
+        const cuadros = vistaFondos.querySelectorAll('.drop-zone');
+        cuadros.forEach(cuadro => {
+            const contenidoOriginal = cuadro.dataset.originalContent;
+            if (['A', 'B', 'C'].includes(contenidoOriginal)) {
+                cuadro.innerHTML = `<span>${contenidoOriginal}</span>`;
+            } else if (!cuadro.classList.contains('item-basura-fondos')) {
+                cuadro.innerHTML = '+';
+            }
+            delete cuadro.dataset.tieneImagen;
+        });
+    }
+    
+    // Limpiar campos
+    document.getElementById('tematica').value = '';
+    document.getElementById('nombre-input').selectedIndex = 0;
+    document.getElementById('edad').value = '';
+    document.getElementById('publico').selectedIndex = 0;
+    
+    // Limpiar colores
+    document.querySelectorAll('#grupo-colores .color-circulo').forEach(c => {
+        c.value = '#0d0d0d';
+    });
+    
+    // Limpiar localStorage
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('super-imprimibles-state-texto');
+    
+    console.log('🧹 Proyecto limpiado');
+}
+
+// ============================================================
+// DEBOUNCE
+// ============================================================
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ============================================================
+// MODALES DE PROGRESO
+// ============================================================
+function mostrarModalProgreso(titulo, mensaje) {
+    const modal = `
+        <div class="modal-backdrop open" id="modal-progreso">
+            <div class="modal-content medium">
+                <div class="modal-header">
+                    <h2>${titulo}</h2>
+                </div>
+                <div class="modal-body" style="text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <div class="loading-text" style="margin-top: 20px;">${mensaje}</div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+function ocultarModalProgreso() {
+    const modal = document.getElementById('modal-progreso');
+    if (modal) modal.remove();
+}
+
+// ============================================================
+// NOTIFICACIONES
+// ============================================================
+function mostrarNotificacion(mensaje) {
+    console.log('💬', mensaje);
+    
+    const notif = document.createElement('div');
+    notif.className = 'notification';
+    notif.textContent = mensaje;
+    notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #00ff00;
+        color: #000;
+        padding: 15px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notif);
+    
+    setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+    }, 3000);
+}
+
+function mostrarError(mensaje) {
+    console.error('❌', mensaje);
+    alert(mensaje);
+}
+
+// ============================================================
+// ANIMACIONES CSS (agregar a style.css)
+// ============================================================
+const animationsCSS = `
+@keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+}
+`;
+
+// Inyectar animaciones
+const styleSheet = document.createElement('style');
+styleSheet.textContent = animationsCSS;
+document.head.appendChild(styleSheet);
