@@ -641,3 +641,65 @@ document.addEventListener("DOMContentLoaded", () => {
         ctrl.addEventListener("change", aplicarEstilosAPreview);
     });
 });
+
+// ============================================================
+// BOTÓN APLICAR - Con integración a PowerPoint
+// ============================================================
+const btnAplicar = document.querySelector('.btn-aplicar');
+
+if (btnAplicar) {
+    btnAplicar.addEventListener('click', async () => {
+        console.log('Aplicando estilos...');
+        
+        btnAplicar.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            btnAplicar.style.transform = '';
+        }, 200);
+        
+        // Obtener estilos configurados
+        const estilosFinales = obtenerEstilosDesdeControles();
+        
+        // Guardar en localStorage para persistencia
+        guardarEstadoCompleto({ estilosTexto: estilosFinales });
+        
+        // Enviar a proceso principal para aplicar a PowerPoint
+        try {
+            const { ipcRenderer } = require('electron');
+            
+            ipcRenderer.send('aplicar-estilos-texto', {
+                estilos: estilosFinales
+            });
+            
+            // Esperar confirmación
+            ipcRenderer.once('estilos-aplicados', (event, resultado) => {
+                if (resultado.success) {
+                    console.log('✅ Estilos aplicados al PowerPoint');
+                    
+                    // Mostrar notificación
+                    mostrarNotificacion('✅ Estilos aplicados correctamente');
+                    
+                    // Cerrar ventana después de 1 segundo
+                    setTimeout(() => {
+                        window.close();
+                    }, 1000);
+                } else {
+                    console.error('❌ Error aplicando estilos:', resultado.error);
+                    mostrarError('Error al aplicar estilos');
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error aplicando estilos:', error);
+        }
+    });
+}
+
+function mostrarNotificacion(mensaje) {
+    console.log('💬', mensaje);
+    // TODO: Implementar notificación visual
+}
+
+function mostrarError(mensaje) {
+    console.error('❌', mensaje);
+    alert(mensaje);
+}

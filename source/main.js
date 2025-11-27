@@ -437,3 +437,48 @@ app.on('activate', () => {
     createMainWindow();
   }
 });
+
+// ============================================================
+// IPC HANDLERS PARA ESTILOS DE TEXTO
+// ============================================================
+ipcMain.on('aplicar-estilos-texto', async (event, data) => {
+  try {
+    const TextStyleApplier = require('./text-style-applier.js');
+    const applier = new TextStyleApplier();
+    
+    // Aplicar estilos al PowerPoint de trabajo
+    if (libreOfficeExporter && libreOfficeExporter.workingPath) {
+      const resultado = await applier.aplicarEstilos(
+        libreOfficeExporter.workingPath,
+        data.estilos
+      );
+      
+      if (resultado.success) {
+        // Copiar fuente a carpeta de Fuentes
+        if (data.estilos.fuente) {
+          await applier.copiarFuente(data.estilos.fuente);
+        }
+        
+        // Guardar estilos como JSON
+        applier.guardarEstilosJSON(data.estilos, 'current');
+        
+        // Regenerar diapositivas
+        await libreOfficeExporter.exportAllSlides();
+        enviarTodasLasDiapositivas(9);
+        
+        event.reply('estilos-aplicados', { success: true });
+      } else {
+        event.reply('estilos-aplicados', { success: false, error: resultado.error });
+      }
+    } else {
+      event.reply('estilos-aplicados', { 
+        success: false, 
+        error: 'PowerPoint no inicializado' 
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error aplicando estilos:', error);
+    event.reply('estilos-aplicados', { success: false, error: error.message });
+  }
+});

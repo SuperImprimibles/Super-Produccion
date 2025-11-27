@@ -1,5 +1,5 @@
 // ============================================================
-// SCRIPT PRINCIPAL CON GRID 3x3 Y TEMÁTICA
+// SCRIPT PRINCIPAL CON REMBG Y VALIDACIONES
 // ============================================================
 
 const { ipcRenderer } = require('electron');
@@ -10,10 +10,214 @@ const STORAGE_KEY = 'super-imprimibles-state';
 
 let libreOfficeReady = false;
 let isUpdating = false;
+let rembgProcessor = null;
 
 let estadoPrevio = null;
 let colaActualizaciones = [];
 let procesandoCola = false;
+
+// ============================================================
+// INICIALIZAR REMBG
+// ============================================================
+async function inicializarRembg() {
+    try {
+        const RembgProcessor = require('../source/rembg-processor.js');
+        rembgProcessor = new RembgProcessor();
+        
+        const isInstalled = await rembgProcessor.verifyRembg();
+        
+        if (isInstalled) {
+            console.log('✅ Rembg listo para usar');
+            return true;
+        } else {
+            console.warn('⚠️ Rembg no está instalado');
+            mostrarAdvertenciaRembg();
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error inicializando rembg:', error);
+        return false;
+    }
+}
+
+// ============================================================
+// INICIALIZAR HISTORIAL DE MATERIAL
+// ============================================================
+let materialHistory = null;
+
+async function inicializarHistorial() {
+    try {
+        const MaterialHistory = require('../source/material-history.js');
+        materialHistory = new MaterialHistory();
+        console.log('✅ Historial de material inicializado');
+        return true;
+    } catch (error) {
+        console.error('❌ Error inicializando historial:', error);
+        return false;
+    }
+}
+
+// ============================================================
+// MOSTRAR MODAL DE HISTORIAL
+// ============================================================
+function mostrarModalHistorial() {
+    if (!materialHistory) {
+        console.error('❌ Historial no inicializado');
+        return;
+    }
+    
+    const modalHTML = materialHistory.generarModalHTML();
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Configurar drag & drop
+    configurarDragDropHistorial();
+    
+    // Configurar filtros
+    configurarFiltrosHistorial();
+}
+
+window.cerrarModalHistorial = function() {
+    const modal = document.getElementById('modal-historial');
+    if (modal) modal.remove();
+};
+
+window.limpiarHistorial = function() {
+    if (confirm('¿Estás seguro de que quieres limpiar todo el historial?')) {
+        if (materialHistory) {
+            materialHistory.limpiarHistorial();
+            cerrarModalHistorial();
+            mostrarNotificacion('🧹 Historial limpiado');
+        }
+    }
+};
+
+window.filtrarHistorial = function(tipo) {
+    const items = document.querySelectorAll('.history-item');
+    
+    items.forEach(item => {
+        const tipoItem = item.querySelector('.history-item-tipo').textContent;
+        
+        if (tipo === 'todos') {
+            item.style.display = 'block';
+        } else if (tipoItem === tipo) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+};
+
+// ============================================================
+// CONFIGURAR DRAG & DROP DEL HISTORIAL
+// ============================================================
+function configurarDragDropHistorial() {
+    const items = document.querySelectorAll('.history-item');
+    
+    items.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+            const filename = item.dataset.filename;
+            const dataUrl = materialHistory.obtenerImagenDataUrl(filename);
+            
+            e.dataTransfer.setData('text/plain', dataUrl);
+            e.dataTransfer.effectAllowed = 'copy';
+            
+            item.style.opacity = '0.5';
+        });
+        
+        item.addEventListener('dragend', (e) => {
+            item.style.opacity = '1';
+        });
+    });
+}
+
+// ============================================================
+// CONFIGURAR FILTROS
+// ============================================================
+function configurarFiltrosHistorial() {
+    const inputFiltro = document.getElementById('filtro-historial');
+    
+    if (inputFiltro) {
+        inputFiltro.addEventListener('input', (e) => {
+            const busqueda = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.history-item');
+            
+            items.forEach(item => {
+                const proyecto = item.querySelector('.history-item-proyecto').textContent.toLowerCase();
+                
+                if (proyecto.includes(busqueda) || busqueda === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+}
+
+// ============================================================
+// AGREGAR IMAGEN AL HISTORIAL
+// ============================================================
+async function agregarImagenAlHistorial(dataUrl, tipo, tematica) {
+    if (materialHistory) {
+        const info = {
+            tipo: tipo,
+            tematica: tematica || document.getElementById('tematica')?.value || '',
+            proyecto: tematica || 'Sin nombre',
+            timestamp: Date.now()
+        };
+        
+        await materialHistory.agregarImagen(dataUrl, info);
+    }
+}
+
+function mostrarAdvertenciaRembg() {
+    const modal = `
+        <div class="modal-backdrop open">
+            <div class="modal-content medium">
+                <div class="modal-header">
+                    <h2>⚠️ Rembg no instalado</h2>
+                </div>
+                <div class="modal-body">
+                    <p>La eliminación automática de fondos requiere <strong>rembg</strong>.</p>
+                    <p>¿Deseas instalarlo ahora? (tomará 2-3 minutos)</p>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button onclick="instalarRembgAhora()" class="btn-publicar">Instalar Ahora</button>
+                        <button onclick="cerrarModalRembg()" class="btn-preset">Más Tarde</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+window.instalarRembgAhora = async function() {
+    cerrarModalRembg();
+    mostrarModalProgreso('Instalando rembg...', 'Esto puede tomar varios minutos');
+    
+    try {
+        const AutoInstaller = require('../source/auto-installer.js');
+        const installer = new AutoInstaller();
+        const success = await installer.installRembgOnly();
+        
+        ocultarModalProgreso();
+        
+        if (success) {
+            mostrarNotificacion('✅ Rembg instalado correctamente');
+            await inicializarRembg();
+        } else {
+            mostrarError('No se pudo instalar rembg. Instálalo manualmente: pip install rembg[gpu]');
+        }
+    } catch (error) {
+        ocultarModalProgreso();
+        mostrarError('Error instalando rembg: ' + error.message);
+    }
+};
+
+window.cerrarModalRembg = function() {
+    const modal = document.querySelector('.modal-backdrop');
+    if (modal) modal.remove();
+};
 
 // ============================================================
 // MAPEO DE CUADROS A FORMAS
@@ -22,7 +226,7 @@ const MAPEO_PERSONAJES = {
     0: 'PNG 1', 1: 'PNG 2', 2: 'PNG 3', 3: 'PNG 4',
     4: 'PNG 5', 5: 'PNG 6', 6: 'PNG 7', 7: 'PNG 8',
     8: 'PNG 9', 9: 'PNG 10', 10: 'PNG 11', 11: 'PNG 12',
-    12: 'LOGO'
+    12: 'PNG LOGO'
 };
 
 const MAPEO_FONDOS = {
@@ -44,7 +248,11 @@ const MAPEO_COLORES = {
 window.addEventListener('DOMContentLoaded', () => {
     console.log('🎬 Iniciando aplicación...');
     setupLibreOfficeListeners();
-    setTimeout(() => inicializarApp(), 1000);
+    setTimeout(async () => {
+        await inicializarRembg();
+        await inicializarModoIA();
+        inicializarApp();
+    }, 1000);
 });
 
 // ============================================================
@@ -57,7 +265,6 @@ function setupLibreOfficeListeners() {
             console.log('✅ LibreOffice listo');
             hideLoading();
             cargarEstado();
-            // Cargar las 9 diapositivas
             cargarTodasLasDiapositivas();
         } else {
             console.error('❌ Error al inicializar LibreOffice');
@@ -87,7 +294,6 @@ function setupLibreOfficeListeners() {
     ipcRenderer.on('libreoffice-changes-applied', (event, data) => {
         if (data.success) {
             console.log('✅ Cambios aplicados exitosamente');
-            // Recargar todas las diapositivas después de aplicar cambios
             cargarTodasLasDiapositivas();
         } else {
             console.error('❌ Error aplicando cambios:', data.error);
@@ -174,7 +380,7 @@ function detectarCambios(estadoNuevo) {
         }
     }
     
-    // ✅ NUEVO: Comparar TEMÁTICA
+    // Comparar TEMÁTICA
     if (estadoNuevo.config?.tematica !== estadoPrevio.config?.tematica) {
         if (estadoNuevo.config?.tematica) {
             cambios.push({
@@ -248,7 +454,7 @@ function generarCambiosCompletos(estado) {
         });
     }
     
-    // ✅ NUEVO: Texto TEMÁTICA
+    // Texto TEMÁTICA
     if (estado.config?.tematica) {
         cambios.push({
             tipo: 'texto',
@@ -529,6 +735,38 @@ function debounce(func, wait) {
     };
 }
 
+function mostrarModalProgreso(titulo, mensaje) {
+    const modal = `
+        <div class="modal-backdrop open" id="modal-progreso">
+            <div class="modal-content medium">
+                <div class="modal-header">
+                    <h2>${titulo}</h2>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <p>${mensaje}</p>
+                    <div class="spinner" style="margin: 20px auto;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+function ocultarModalProgreso() {
+    const modal = document.getElementById('modal-progreso');
+    if (modal) modal.remove();
+}
+
+function mostrarNotificacion(mensaje) {
+    console.log('💬', mensaje);
+    // TODO: Implementar notificación visual
+}
+
+function mostrarError(mensaje) {
+    console.error('❌', mensaje);
+    alert(mensaje);
+}
+
 // ============================================================
 // INICIALIZACIÓN DE LA APP
 // ============================================================
@@ -571,17 +809,14 @@ function configurarClickDiapositivas() {
             const slideNum = item.dataset.slide;
             console.log(`📄 Diapositiva ${slideNum} seleccionada`);
             
-            // Quitar selección anterior
             items.forEach(i => i.classList.remove('selected'));
             item.classList.add('selected');
-            
-            // Aquí podrías abrir un modal con la diapositiva ampliada
         });
     });
 }
 
 // ============================================================
-// TABS, DRAG & DROP, CAMPOS
+// TABS, DRAG & DROP CON REMBG, CAMPOS
 // ============================================================
 function configurarTabs() {
     const buttons = document.querySelectorAll(".tabs-lateral .tab-superior");
@@ -611,18 +846,20 @@ function configurarDragDrop() {
             e.stopPropagation();
         });
         
-        cuadro.addEventListener('drop', (e) => {
+        cuadro.addEventListener('drop', async (e) => {
             e.preventDefault();
             e.stopPropagation();
             
+            // Drop desde computadora
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 const archivo = e.dataTransfer.files[0];
                 if (archivo.type.startsWith('image/')) {
-                    cargarImagenEnCuadro(cuadro, archivo);
+                    await cargarImagenEnCuadro(cuadro, archivo);
                 }
                 return;
             }
             
+            // Drop desde otro cuadro
             if (elementoArrastrado && elementoArrastrado !== cuadro) {
                 intercambiarContenido(elementoArrastrado, cuadro);
             }
@@ -638,6 +875,7 @@ function configurarDragDrop() {
             elementoArrastrado = null;
         });
         
+        // Click para abrir editor
         cuadro.addEventListener('click', (e) => {
             const img = cuadro.querySelector('img');
             if (img && !cuadro.classList.contains('dragging')) {
@@ -663,17 +901,152 @@ function configurarDragDrop() {
         });
     });
     
-    function cargarImagenEnCuadro(cuadro, archivo) {
+    // ============================================================
+    // CARGAR IMAGEN CON PROCESAMIENTO REMBG
+    // ============================================================
+    async function cargarImagenEnCuadro(cuadro, archivo) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
+            const imagenOriginal = event.target.result;
+            
+            // Determinar si es personaje o fondo
+            const vista = cuadro.closest('.vista-tab');
+            const esPersonaje = vista && vista.id === 'vista-personajes';
+            
+            // Determinar si es el cuadro del LOGO
+            const vistaPersonajes = document.getElementById('vista-personajes');
+            const cuadros = vistaPersonajes ? vistaPersonajes.querySelectorAll('.drop-zone') : [];
+            const esLogo = cuadro === cuadros[12];
+            
+            // Solo procesar con rembg si es personaje (NO logo) y rembg está disponible
+            let imagenFinal = imagenOriginal;
+            
+            if (esPersonaje && !esLogo && rembgProcessor) {
+                try {
+                    mostrarModalProgreso('⏳ Procesando imagen', 'Eliminando fondo con rembg...');
+                    
+                    const tempPath = rembgProcessor.dataUrlToFile(imagenOriginal);
+                    const result = await rembgProcessor.processImage(tempPath, null, {
+                        model: 'u2net',
+                        alphaMatting: true,
+                        postProcessMask: true
+                    });
+                    
+                    if (result.success) {
+                        imagenFinal = rembgProcessor.fileToDataUrl(result.outputPath);
+                        console.log(`✅ Fondo eliminado en ${result.duration}s`);
+                        
+                        fs.unlinkSync(tempPath);
+                        fs.unlinkSync(result.outputPath);
+                    }
+                    
+                    ocultarModalProgreso();
+                    
+                } catch (error) {
+                    console.warn('⚠️ No se pudo procesar con rembg:', error);
+                    ocultarModalProgreso();
+                    imagenFinal = imagenOriginal;
+                }
+            }
+            
+            // Si es LOGO y hay Modo IA activo, analizar automáticamente
+            if (esLogo && groqModule) {
+                analizarLogoAutomaticamente(imagenFinal);
+            }
+            
+            // Mostrar imagen en cuadro
             cuadro.innerHTML = '';
             const img = document.createElement('img');
-            img.src = event.target.result;
+            img.src = imagenFinal;
             cuadro.appendChild(img);
             cuadro.dataset.tieneImagen = 'true';
             guardarEstado();
         };
         reader.readAsDataURL(archivo);
+    }
+    
+    // ============================================================
+    // ANALIZAR LOGO AUTOMÁTICAMENTE
+    // ============================================================
+    async function analizarLogoAutomaticamente(logoDataUrl) {
+        console.log('🔍 Analizando logo automáticamente...');
+        
+        mostrarModalProgreso('🤖 Analizando logo', 'La IA está extrayendo colores y estilos...');
+        
+        try {
+            const tematica = document.getElementById('tematica')?.value || '';
+            const analisis = await groqModule.analizarLogo(logoDataUrl, tematica);
+            
+            console.log('✅ Análisis completado:', analisis);
+            
+            // Aplicar colores automáticamente
+            if (analisis.colores_sugeridos && analisis.colores_sugeridos.length >= 3) {
+                const colores = document.querySelectorAll('#grupo-colores .color-circulo');
+                analisis.colores_sugeridos.slice(0, 3).forEach((color, index) => {
+                    if (colores[index]) {
+                        colores[index].value = color;
+                        colores[index].dispatchEvent(new Event('change'));
+                    }
+                });
+                
+                mostrarNotificacion(`✨ Colores aplicados del logo`);
+            }
+            
+            // Guardar análisis para referencia
+            localStorage.setItem('logo-analisis', JSON.stringify(analisis));
+            
+            ocultarModalProgreso();
+            
+            // Mostrar resumen del análisis
+            mostrarResumenAnalisis(analisis);
+            
+        } catch (error) {
+            console.error('❌ Error analizando logo:', error);
+            ocultarModalProgreso();
+        }
+    }
+    
+    function mostrarResumenAnalisis(analisis) {
+        const modal = `
+            <div class="modal-backdrop open" id="modal-analisis-logo">
+                <div class="modal-content medium">
+                    <div class="modal-header">
+                        <h2>🎨 Análisis del Logo</h2>
+                        <button class="modal-close-btn" onclick="document.getElementById('modal-analisis-logo').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Estilo:</strong> ${analisis.estilo}</p>
+                        <p><strong>Descripción:</strong> ${analisis.descripcion}</p>
+                        
+                        <div style="margin: 15px 0;">
+                            <strong>Colores sugeridos:</strong>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                ${analisis.colores_sugeridos.map(color => `
+                                    <div style="width: 50px; height: 50px; background: ${color}; border-radius: 8px; border: 2px solid #3a3a3a;"></div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <p><strong>Fuente sugerida:</strong> ${analisis.fuente_sugerida}</p>
+                        
+                        <div style="margin-top: 15px;">
+                            <strong>Características detectadas:</strong>
+                            <ul style="margin: 10px 0; padding-left: 20px;">
+                                ${analisis.tiene_sombra ? '<li>✅ Tiene sombra</li>' : ''}
+                                ${analisis.tiene_degradado ? '<li>✅ Tiene degradado</li>' : ''}
+                                ${analisis.tiene_bordes ? '<li>✅ Tiene bordes</li>' : ''}
+                            </ul>
+                        </div>
+                        
+                        <button onclick="document.getElementById('modal-analisis-logo').remove()" class="btn-publicar" style="margin-top: 20px; width: 100%;">
+                            Entendido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modal);
     }
     
     function intercambiarContenido(origen, destino) {

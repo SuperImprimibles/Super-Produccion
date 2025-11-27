@@ -1,58 +1,35 @@
 // ============================================================
-// SISTEMA DE CLICK DERECHO PARA MODO IA (TURQUESA)
+// SUPER EDITOR - Con integración de rembg
 // ============================================================
+
+const { ipcRenderer } = require('electron');
+const fs = require('fs');
+const path = require('path');
+
+let rembgProcessor = null;
+let imagenOriginal = null;
+let imagenProcesada = null;
+let canvas = null;
+let ctx = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     
     // ============================================================
-    // ELEMENTOS INDIVIDUALES CON .ai-enable
+    // INICIALIZAR REMBG PROCESSOR
     // ============================================================
-    const aiElements = document.querySelectorAll('.ai-enable');
-    
-    aiElements.forEach(element => {
-        element.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            element.classList.toggle('ai-mode');
-        });
-    });
-    
-    // ============================================================
-    // CAJAS COMPLETAS (Click derecho en el header H3)
-    // ============================================================
-    const aiBoxHeaders = document.querySelectorAll('.ai-box-header');
-    
-    aiBoxHeaders.forEach(header => {
-        header.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            
-            const isActive = header.classList.toggle('ai-mode');
-            
-            // Encontrar la sección control
-            const seccion = header.closest('.seccion-control');
-            if (!seccion) return;
-            
-            if (isActive) {
-                seccion.classList.add('ai-box-mode');
-            } else {
-                seccion.classList.remove('ai-box-mode');
-            }
-            
-            // Aplicar a todos los controles de la sección
-            const controls = seccion.querySelectorAll('.ai-enable');
-            controls.forEach(control => {
-                if (isActive) {
-                    control.classList.add('ai-mode');
-                } else {
-                    control.classList.remove('ai-mode');
-                }
-            });
-        });
-    });
+    try {
+        const RembgProcessor = require('../../source/rembg-processor.js');
+        rembgProcessor = new RembgProcessor();
+        console.log('✅ Rembg Processor inicializado');
+    } catch (error) {
+        console.error('❌ Error inicializando rembg:', error);
+    }
     
     // ============================================================
     // CONFIGURACIÓN DEL CANVAS
     // ============================================================
-    const canvas = document.getElementById('canvas-editor');
-    const ctx = canvas.getContext('2d');
+    canvas = document.getElementById('canvas-editor');
+    ctx = canvas.getContext('2d');
     
     // Variables de estado
     let dibujando = false;
@@ -68,14 +45,71 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     guardarEnHistorial();
     
-    // Cargar imagen si existe en localStorage
+    // ============================================================
+    // CARGAR IMAGEN Y PROCESAR CON REMBG
+    // ============================================================
     const imagenGuardada = localStorage.getItem('imagen-editor');
     if (imagenGuardada) {
+        cargarYProcesarImagen(imagenGuardada);
+        localStorage.removeItem('imagen-editor');
+    }
+    
+    async function cargarYProcesarImagen(dataUrl) {
+        mostrarLoading('Procesando imagen con rembg...');
+        
+        try {
+            // Guardar imagen original
+            imagenOriginal = dataUrl;
+            
+            if (!rembgProcessor) {
+                throw new Error('rembg no está disponible');
+            }
+            
+            // Convertir dataUrl a archivo temporal
+            const tempPath = rembgProcessor.dataUrlToFile(dataUrl);
+            
+            // Procesar con rembg
+            const result = await rembgProcessor.processImage(tempPath, null, {
+                model: 'u2net',
+                alphaMatting: true,
+                alphaMattingForegroundThreshold: 240,
+                alphaMattingBackgroundThreshold: 10,
+                postProcessMask: true
+            });
+            
+            if (result.success) {
+                // Convertir resultado a dataUrl
+                imagenProcesada = rembgProcessor.fileToDataUrl(result.outputPath);
+                
+                // Mostrar en canvas
+                cargarImagenEnCanvas(imagenProcesada);
+                
+                ocultarLoading();
+                mostrarNotificacion(`✅ Imagen procesada en ${result.duration}s`);
+                
+                // Limpiar archivos temporales
+                fs.unlinkSync(tempPath);
+                fs.unlinkSync(result.outputPath);
+            }
+            
+        } catch (error) {
+            console.error('Error procesando imagen:', error);
+            ocultarLoading();
+            mostrarError('No se pudo procesar la imagen con rembg. ¿Está instalado?');
+            
+            // Cargar imagen original sin procesar
+            cargarImagenEnCanvas(imagenOriginal);
+        }
+    }
+    
+    function cargarImagenEnCanvas(dataUrl) {
         const img = new Image();
         img.onload = function() {
+            // Limpiar canvas
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // Dibujar imagen centrada y escalada
             const escala = Math.min(canvas.width / img.width, canvas.height / img.height);
             const x = (canvas.width - img.width * escala) / 2;
             const y = (canvas.height - img.height * escala) / 2;
@@ -83,8 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             guardarEnHistorial();
         };
-        img.src = imagenGuardada;
-        localStorage.removeItem('imagen-editor');
+        img.src = dataUrl;
     }
     
     // ============================================================
@@ -197,18 +230,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const max = parseInt(slider.max) || 100;
             
             if (e.deltaY < 0) {
-                // Scroll hacia arriba - aumentar
                 if (valor < max) valor++;
             } else {
-                // Scroll hacia abajo - disminuir
                 if (valor > min) valor--;
             }
             
             slider.value = valor;
+            slider.dispatchEvent(new Event('input'));
+        });
+    });
+    
+    // Control con rueda sobre valores numéricos
+    document.querySelectorAll('.valor-display').forEach(display => {
+        display.addEventListener('wheel', e => {
+            e.preventDefault();
+            const id = display.id.replace('valor-', 'slider-');
+            const slider = document.getElementById(id);
+            if (!slider) return;
             
-            // Disparar evento input para actualizar display
-            const event = new Event('input');
-            slider.dispatchEvent(event);
+            const step = slider.step ? parseInt(slider.step) : 1;
+            if (e.deltaY < 0) {
+                slider.value = Math.min(parseInt(slider.value) + step, parseInt(slider.max));
+            } else {
+                slider.value = Math.max(parseInt(slider.value) - step, parseInt(slider.min));
+            }
+            
+            display.textContent = slider.value + (id.includes('angulo') ? '°' : '');
+            slider.dispatchEvent(new Event('input'));
         });
     });
     
@@ -237,14 +285,14 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.lineJoin = 'round';
         
         if (herramientaActual === 'lapiz') {
-            ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)'; // Verde semitransparente para conservar
+            ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
             ctx.globalCompositeOperation = 'source-over';
             ctx.lineTo(x, y);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x, y);
         } else if (herramientaActual === 'borrador') {
-            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)'; // Rojo semitransparente para eliminar
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
             ctx.globalCompositeOperation = 'source-over';
             ctx.lineTo(x, y);
             ctx.stroke();
@@ -293,33 +341,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     btnLapiz.addEventListener('click', () => {
         activarHerramienta('lapiz');
-        console.log('Herramienta: Lápiz - Marcar áreas a conservar');
     });
     
     btnBorrador.addEventListener('click', () => {
         activarHerramienta('borrador');
-        console.log('Herramienta: Borrador - Marcar áreas a eliminar');
     });
     
     btnEliminar.addEventListener('click', () => {
-        if (confirm('¿Estás seguro de que quieres restaurar los cambios?')) {
-            // Restaurar al último estado guardado en el historial
-            if (historialIndex > 0) {
-                historialIndex--;
-                const imagenData = historial[historialIndex];
-                ctx.putImageData(imagenData, 0, 0);
-                console.log('Cambios restaurados');
-            } else {
-                console.log('No hay cambios para restaurar');
+        if (confirm('¿Restaurar imagen original?')) {
+            if (imagenProcesada) {
+                cargarImagenEnCanvas(imagenProcesada);
             }
         }
     });
     
-    // Activar lápiz por defecto
     activarHerramienta('lapiz');
     
     // ============================================================
-    // HISTORIAL (DESHACER/REHACER)
+    // HISTORIAL
     // ============================================================
     function guardarEnHistorial() {
         const imagenData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -327,7 +366,6 @@ document.addEventListener('DOMContentLoaded', function() {
         historial.push(imagenData);
         historialIndex++;
         
-        // Limitar historial a 50 estados
         if (historial.length > 50) {
             historial.shift();
             historialIndex--;
@@ -339,151 +377,91 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     const btnAplicar = document.getElementById('btn-aplicar-editor');
     
-    btnAplicar.addEventListener('click', () => {
-        console.log('Aplicando cambios del editor...');
+    btnAplicar.addEventListener('click', async () => {
+        mostrarLoading('Aplicando cambios...');
         
-        // Efecto visual
-        btnAplicar.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            btnAplicar.style.transform = '';
-        }, 200);
-        
-        // Obtener configuración
-        const configuracion = {
-            posicion: {
-                ancho: sliderAncho.value,
-                alto: sliderAlto.value,
-                dispX: sliderDispX.value,
-                dispY: sliderDispY.value
-            },
-            sombras: {
-                color: sombraColor.value,
-                tamano: sliderSombraTamano.value,
-                transparencia: sliderSombraTransparencia.value,
-                desenfoque: sliderSombraDesenfoque.value,
-                angulo: sliderSombraAngulo.value,
-                distancia: sliderSombraDistancia.value
-            },
-            iluminacion: {
-                color: iluminacionColor.value,
-                tamano: sliderIluminacionTamano.value,
-                transparencia: sliderIluminacionTransparencia.value,
-                desenfoque: sliderIluminacionDesenfoque.value
-            },
-            imagen: canvas.toDataURL()
-        };
-        
-        console.log('Configuración aplicada:', configuracion);
-        
-        // Aquí se procesaría la imagen con las áreas marcadas
-        alert('Imagen procesada. En la versión final aquí se aplicará la eliminación de fondo.');
-    });
-    
-    // ============================================================
-    // CARGAR IMAGEN
-    // ============================================================
-    const inputAbrirArchivo = document.getElementById('input-abrir-archivo');
-    
-    // Permitir drag & drop de imágenes
-    canvas.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        canvas.style.opacity = '0.5';
-    });
-    
-    canvas.addEventListener('dragleave', () => {
-        canvas.style.opacity = '1';
-    });
-    
-    canvas.addEventListener('drop', (e) => {
-        e.preventDefault();
-        canvas.style.opacity = '1';
-        
-        const archivo = e.dataTransfer.files[0];
-        if (archivo && archivo.type.startsWith('image/')) {
-            cargarImagen(archivo);
+        try {
+            // Obtener imagen editada del canvas
+            const editedDataUrl = canvas.toDataURL('image/png');
+            
+            // Guardar configuración de efectos
+            const configuracion = {
+                posicion: {
+                    ancho: sliderAncho.value,
+                    alto: sliderAlto.value,
+                    dispX: sliderDispX.value,
+                    dispY: sliderDispY.value
+                },
+                sombras: {
+                    color: sombraColor.value,
+                    tamano: sliderSombraTamano.value,
+                    transparencia: sliderSombraTransparencia.value,
+                    desenfoque: sliderSombraDesenfoque.value,
+                    angulo: sliderSombraAngulo.value,
+                    distancia: sliderSombraDistancia.value
+                },
+                iluminacion: {
+                    color: iluminacionColor.value,
+                    tamano: sliderIluminacionTamano.value,
+                    transparencia: sliderIluminacionTransparencia.value,
+                    desenfoque: sliderIluminacionDesenfoque.value
+                },
+                borde: document.querySelector('.btn-borde.activo')?.dataset.borde || '0'
+            };
+            
+            // Guardar en localStorage para la ventana principal
+            localStorage.setItem('imagen-editada', editedDataUrl);
+            localStorage.setItem('imagen-config', JSON.stringify(configuracion));
+            
+            ocultarLoading();
+            mostrarNotificacion('✅ Cambios aplicados');
+            
+            // Cerrar ventana después de 1 segundo
+            setTimeout(() => {
+                window.close();
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Error aplicando cambios:', error);
+            ocultarLoading();
+            mostrarError('Error al aplicar cambios');
         }
     });
     
-    function cargarImagen(archivo) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                // Limpiar canvas
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Dibujar imagen centrada y escalada
-                const escala = Math.min(canvas.width / img.width, canvas.height / img.height);
-                const x = (canvas.width - img.width * escala) / 2;
-                const y = (canvas.height - img.height * escala) / 2;
-                ctx.drawImage(img, x, y, img.width * escala, img.height * escala);
-                
-                guardarEnHistorial();
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(archivo);
+    // ============================================================
+    // FUNCIONES DE UI
+    // ============================================================
+    function mostrarLoading(mensaje) {
+        // Implementar modal de loading
+        console.log('⏳', mensaje);
+    }
+    
+    function ocultarLoading() {
+        console.log('✅ Loading ocultado');
+    }
+    
+    function mostrarNotificacion(mensaje) {
+        console.log('💬', mensaje);
+    }
+    
+    function mostrarError(mensaje) {
+        console.error('❌', mensaje);
+        alert(mensaje);
     }
     
     // ============================================================
     // ATAJOS DE TECLADO
     // ============================================================
     document.addEventListener('keydown', (e) => {
-        // P: Lápiz
-        if (e.key === 'p' || e.key === 'P') {
-            btnLapiz.click();
-        }
-        
-        // E: Borrador
-        if (e.key === 'e' || e.key === 'E') {
-            btnBorrador.click();
-        }
-        
-        // Enter: Aplicar
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            btnAplicar.click();
-        }
-        
-        // Esc: Cerrar ventana
-        if (e.key === 'Escape') {
-            e.preventDefault();
-            window.close();
-        }
-        
-        // Ctrl+Z: Restaurar
+        if (e.key === 'p' || e.key === 'P') btnLapiz.click();
+        if (e.key === 'e' || e.key === 'E') btnBorrador.click();
+        if (e.key === 'Enter') { e.preventDefault(); btnAplicar.click(); }
+        if (e.key === 'Escape') { e.preventDefault(); window.close(); }
         if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
             e.preventDefault();
             btnEliminar.click();
         }
     });
     
-    console.log('Super Editor cargado correctamente');
-});
-
-// --- Control con rueda del mouse sobre las cajitas de valores ---
-document.querySelectorAll('.valor-display').forEach(display => {
-    display.addEventListener('wheel', e => {
-        e.preventDefault();
-
-        // Buscar el slider asociado
-        const id = display.id.replace('valor-', 'slider-');
-        const slider = document.getElementById(id);
-        if (!slider) return;
-
-        // Ajustar valor con la rueda
-        const step = slider.step ? parseInt(slider.step) : 1;
-        if (e.deltaY < 0) {
-            slider.value = Math.min(parseInt(slider.value) + step, parseInt(slider.max));
-        } else {
-            slider.value = Math.max(parseInt(slider.value) - step, parseInt(slider.min));
-        }
-
-        // Actualizar texto mostrado
-        display.textContent = slider.value + (id.includes('angulo') ? '°' : '');
-
-        // Disparar evento input para que se refleje en el canvas
-        slider.dispatchEvent(new Event('input'));
-    });
+    console.log('✅ Super Editor cargado correctamente');
 });

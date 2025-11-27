@@ -1,21 +1,28 @@
 {
   "name": "super-imprimible",
   "version": "2.0.0",
-  "description": "Aplicación de escritorio para Super Imprimibles con LibreOffice",
+  "description": "Aplicación de escritorio para Super Imprimibles con LibreOffice y rembg",
   "main": "source/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "npm run verify && electron .",
     "dev": "electron . --dev",
-    "install-python-deps": "pip install python-pptx Pillow"
+    "verify": "node source/verify-dependencies.js",
+    "auto-install": "node source/auto-installer.js",
+    "install-rembg": "node source/auto-installer.js --rembg-only",
+    "setup": "npm install && npm run auto-install",
+    "test-rembg": "python -c \"from rembg import remove; print('✅ rembg OK')\"",
+    "test-python": "python --version && pip list | grep -E 'rembg|python-pptx|Pillow'"
   },
   "keywords": [
     "electron",
     "super-imprimibles",
     "diseño",
     "libreoffice",
-    "python-pptx"
+    "python-pptx",
+    "rembg",
+    "background-removal"
   ],
-  "author": "",
+  "author": "Super Imprimibles",
   "license": "ISC",
   "devDependencies": {
     "electron": "^27.0.0"
@@ -26,11 +33,14 @@
   "requirements": {
     "system": [
       "LibreOffice 7.0+",
-      "Python 3.7+"
+      "Python 3.7+",
+      "CUDA (opcional, para GPU acceleration en rembg)"
     ],
     "python": [
-      "python-pptx",
-      "Pillow"
+      "rembg[gpu] >= 2.0.50",
+      "python-pptx >= 0.6.21",
+      "Pillow >= 9.0.0"
     ]
-  }
+  },
+  "postinstall": "node source/auto-installer.js"
 }
